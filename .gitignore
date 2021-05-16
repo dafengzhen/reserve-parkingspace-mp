@@ -1,3 +1,9 @@
+dist/
+deploy_versions/
+.temp/
+.rn_temp/
+.DS_Store
+
 # Logs
 logs
 *.log
@@ -102,3 +108,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# yarn
+yarn.lock
+
+# idea
+.idea

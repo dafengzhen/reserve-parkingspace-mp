@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "reserve-parkingspace-mp",
+  "description": "这是一个预约停车位的小程序",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}
