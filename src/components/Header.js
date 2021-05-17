@@ -2,6 +2,10 @@ import { Component } from "react";
 import { Text, View } from "@tarojs/components";
 
 export default class Header extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <View
@@ -19,7 +23,7 @@ export default class Header extends Component {
         {/*  leftIconType='chevron-left'*/}
         {/*  leftText='返回'*/}
         {/*/>*/}
-        <Text>预约车位</Text>
+        <Text>{this.props.title}</Text>
       </View>
     );
   }

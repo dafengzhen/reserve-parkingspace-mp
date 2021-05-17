@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { Picker, Text, View } from "@tarojs/components";
+import { Picker, View } from "@tarojs/components";
 import {
   AtButton,
   AtForm,
@@ -139,7 +139,7 @@ class Index extends Component {
       //   </View>
       // </View>
       <View>
-        <Header />
+        <Header title="预约车位" />
 
         <View
           style={{ height: "550px" }}
@@ -182,7 +182,10 @@ class Index extends Component {
                   <View className="at-col at-col-12">
                     <Picker mode="time" onChange={this.onStartTimeChange}>
                       <AtList>
-                        <AtListItem extraText={this.state.model.startTimeSel} />
+                        <AtListItem
+                          title=""
+                          extraText={this.state.model.startTimeSel}
+                        />
                       </AtList>
                     </Picker>
                   </View>
@@ -202,7 +205,10 @@ class Index extends Component {
                   <View className="at-col at-col-12">
                     <Picker mode="time" onChange={this.onEndTimeChange}>
                       <AtList>
-                        <AtListItem extraText={this.state.model.endTimeSel} />
+                        <AtListItem
+                          title=""
+                          extraText={this.state.model.endTimeSel}
+                        />
                       </AtList>
                     </Picker>
                   </View>
