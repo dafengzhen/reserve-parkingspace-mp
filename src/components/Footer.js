@@ -22,9 +22,12 @@ export default class Footer extends Component {
     } else if (value === 1) {
       // 预约申请
       url = "/pages/index/index";
-    } else {
+    } else if (value === 2) {
       // 我的预约
       url = "/pages/mylist/index";
+    } else {
+      // 设置
+      url = "/pages/setting/index";
     }
 
     await Taro.redirectTo({
@@ -41,6 +44,7 @@ export default class Footer extends Component {
             { title: "预约列表", iconType: "list" },
             { title: "预约车位", iconType: "add-circle" },
             { title: "我的预约", iconType: "user" },
+            { title: "设置", iconType: "settings" },
           ]}
           onClick={this.handleClick.bind(this)}
           current={this.state.current}

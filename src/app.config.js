@@ -4,6 +4,7 @@ export default {
     "pages/login/index",
     "pages/list/index",
     "pages/mylist/index",
+    "pages/setting/index",
   ],
   window: {
     backgroundTextStyle: "light",
