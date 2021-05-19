@@ -2,6 +2,7 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { View } from "@tarojs/components";
 import { AtList, AtListItem, AtToast } from "taro-ui";
+import Taro from "@tarojs/taro";
 import { add, minus, asyncAdd } from "../../actions/counter";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
@@ -35,6 +36,12 @@ class Setting extends Component {
     };
   }
 
+  handleLoginClick() {
+    Taro.redirectTo({
+      url: "/pages/login/index",
+    });
+  }
+
   handleClick() {}
 
   render() {
@@ -44,6 +51,7 @@ class Setting extends Component {
 
         <View>
           <AtList hasBorder={false}>
+            <AtListItem title="登录" onClick={this.handleLoginClick} />
             <AtListItem title="退出登录" onClick={this.handleClick} />
           </AtList>
         </View>
