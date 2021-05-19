@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { connect } from "react-redux";
-import { View } from "@tarojs/components";
+import { OpenData, View } from "@tarojs/components";
 import { AtList, AtListItem, AtToast } from "taro-ui";
 import Taro from "@tarojs/taro";
 import { add, minus, asyncAdd } from "../../actions/counter";
@@ -48,6 +48,18 @@ class Setting extends Component {
     return (
       <View>
         <Header title="设置" />
+
+        <View
+          style={{ marginTop: "20px" }}
+          className="at-row at-row__justify--center at-row__align--center"
+        >
+          <View className="at-col-2 at-col--auto">
+            <OpenData type="userAvatarUrl" />
+          </View>
+          <View style={{ marginLeft: "20px" }} className="at-col-2">
+            <OpenData type="userNickName" defaultText="微信用户" />
+          </View>
+        </View>
 
         <View>
           <AtList hasBorder={false}>

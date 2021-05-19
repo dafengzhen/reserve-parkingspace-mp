@@ -9,24 +9,22 @@ import {
   AtListItem,
   AtToast,
 } from "taro-ui";
+import Taro from "@tarojs/taro";
 import "./index.css";
 import Footer from "../../components/Footer";
-import { add, minus, asyncAdd } from "../../actions/counter";
 import Header from "../../components/Header";
+import { delTokenData, handleLogin } from "../../actions/login";
 
 @connect(
-  ({ counter }) => ({
-    counter,
+  ({ login }) => ({
+    login,
   }),
   (dispatch) => ({
-    add() {
-      dispatch(add());
+    delTokenData() {
+      dispatch(delTokenData());
     },
-    dec() {
-      dispatch(minus());
-    },
-    asyncAdd() {
-      dispatch(asyncAdd());
+    handleLogin(homeJump) {
+      return dispatch(handleLogin(homeJump));
     },
   })
 )
@@ -47,9 +45,33 @@ class Index extends Component {
         isOpened: false,
         status: "",
         text: "成功预约车位",
-        icon: "check", // close
+        icon: "check",
       },
     };
+  }
+
+  componentDidMount() {
+    const token = Taro.getStorageSync("token");
+    if (!token) {
+      console.log(token);
+
+      this.props
+        .handleLogin(true)
+        .then((res) => {
+          this.setState({
+            toast: {
+              isOpened: true,
+              status: "",
+              text: res.data ? "欢迎 " + res.data + " 登录" : "欢迎登录",
+              icon: "check",
+            },
+          });
+        })
+        .catch((reason) => {
+          console.log(reason);
+          this.loginFailure(reason.errMsg);
+        });
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -61,6 +83,27 @@ class Index extends Component {
   componentDidShow() {}
 
   componentDidHide() {}
+
+  loginFailure(reason) {
+    this.props.delTokenData();
+    this.setState(
+      {
+        toast: {
+          isOpened: true,
+          status: "",
+          text: "登录失败！请重试" + reason,
+          icon: "close",
+        },
+      },
+      () => {
+        setTimeout(async () => {
+          await Taro.redirectTo({
+            url: "/pages/login/index",
+          });
+        }, 1000);
+      }
+    );
+  }
 
   handleClick(value) {
     console.log(value);
@@ -121,23 +164,6 @@ class Index extends Component {
 
   render() {
     return (
-      // <View className="index">
-      //   <Button className="add_btn" onClick={this.props.add}>
-      //     +
-      //   </Button>
-      //   <Button className="dec_btn" onClick={this.props.dec}>
-      //     -
-      //   </Button>
-      //   <Button className="dec_btn" onClick={this.props.asyncAdd}>
-      //     async
-      //   </Button>
-      //   <View>
-      //     <Text>{this.props.counter.num}</Text>
-      //   </View>
-      //   <View>
-      //     <Text>Hello, World</Text>
-      //   </View>
-      // </View>
       <View>
         <Header title="预约车位" />
 
