@@ -4,6 +4,14 @@
 
 主要以微信小程序为主
 
+# 主要技术
+
+- taro
+- react
+- redux
+- redux-thunk
+- taro ui
+
 # 主要功能
 
 - 微信登录
