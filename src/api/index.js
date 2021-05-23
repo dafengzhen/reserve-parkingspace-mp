@@ -18,3 +18,8 @@ export const api_getUserInfo = apiPublic + "/getUserInfo";
  * 添加车位预约
  */
 export const api_parking = apiAuth + "/parking";
+
+/**
+ * 获取预约车位列表
+ */
+export const api_parkingList = apiPublic + "/parkingList";

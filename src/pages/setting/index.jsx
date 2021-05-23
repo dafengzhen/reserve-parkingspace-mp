@@ -63,7 +63,6 @@ class Setting extends Component {
 
         <View>
           <AtList hasBorder={false}>
-            <AtListItem title="登录" onClick={this.handleLoginClick} />
             <AtListItem title="退出登录" onClick={this.handleClick} />
           </AtList>
         </View>
