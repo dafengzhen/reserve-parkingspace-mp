@@ -1,19 +1,13 @@
 import { Component } from "react";
 import { connect } from "react-redux";
 import { Picker, View } from "@tarojs/components";
-import {
-  AtButton,
-  AtForm,
-  AtInput,
-  AtList,
-  AtListItem,
-  AtToast,
-} from "taro-ui";
+import { AtButton, AtInput, AtList, AtListItem, AtToast } from "taro-ui";
 import Taro from "@tarojs/taro";
 import "./index.css";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { delTokenData, handleLogin } from "../../actions/login";
+import { api_parking } from "../../api";
 
 @connect(
   ({ login }) => ({
@@ -32,21 +26,17 @@ class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      model: {
-        licensePlateNum: "",
-        cellPhoneNum: "",
-        startDateSel: "2021-05-10",
-        startTimeSel: "09:00",
-        endDateSel: "2021-05-10",
-        endTimeSel: "10:00",
-      },
+      licensePlateNum: "粤A12345",
+      cellPhoneNum: "17733114568",
+      startDateSel: "2021-05-10",
+      startTimeSel: "09:00",
+      endDateSel: "2021-05-10",
+      endTimeSel: "10:00",
 
-      toast: {
-        isOpened: false,
-        status: "",
-        text: "成功预约车位",
-        icon: "check",
-      },
+      isOpened: false,
+      status: "",
+      text: "成功预约车位",
+      icon: "check",
     };
   }
 
@@ -58,14 +48,10 @@ class Index extends Component {
       this.props
         .handleLogin(true)
         .then((res) => {
-          this.setState({
-            toast: {
-              isOpened: true,
-              status: "",
-              text: res.data ? "欢迎 " + res.data + " 登录" : "欢迎登录",
-              icon: "check",
-            },
-          });
+          this.myToast(
+            "check",
+            res.data ? "欢迎 " + res.data + " 登录" : "欢迎登录"
+          );
         })
         .catch((reason) => {
           console.log(reason);
@@ -78,22 +64,14 @@ class Index extends Component {
     console.log(this.props, nextProps);
   }
 
-  componentWillUnmount() {}
-
-  componentDidShow() {}
-
-  componentDidHide() {}
-
   loginFailure(reason) {
     this.props.delTokenData();
     this.setState(
       {
-        toast: {
-          isOpened: true,
-          status: "",
-          text: "登录失败！请重试" + reason,
-          icon: "close",
-        },
+        isOpened: true,
+        status: "",
+        text: "登录失败！请重试" + reason,
+        icon: "close",
       },
       () => {
         setTimeout(async () => {
@@ -105,38 +83,86 @@ class Index extends Component {
     );
   }
 
-  handleClick(value) {
-    console.log(value);
-  }
-
-  onSubmit(event) {
+  onSubmit = () => {
     console.log(this.state);
-  }
 
-  onReset(event) {
+    if (!this.state.licensePlateNum) {
+      this.myToast("close", "车牌号不能为空");
+      return;
+    }
+
+    if (!this.state.cellPhoneNum) {
+      this.myToast("close", "手机不能为空");
+      return;
+    }
+
+    const token = Taro.getStorageSync("token");
+    if (!token) {
+      Taro.redirectTo({
+        url: "/pages/login/index",
+      }).catch((reason) => {
+        alert(reason);
+      });
+      return;
+    }
+
+    Taro.request({
+      url: `${api_parking}`,
+      method: "POST",
+      header: {
+        Authorization: token,
+      },
+      data: {
+        licensePlate: this.state.licensePlateNum,
+        phone: this.state.cellPhoneNum,
+        startTime: this.state.startDateSel + "T" + this.state.startTimeSel,
+        endTime: this.state.endDateSel + "T" + this.state.endTimeSel,
+      },
+    })
+      .then((response) => {
+        console.log(response);
+
+        this.myToast("check", response.data);
+      })
+      .catch((reason) => {
+        console.log(reason);
+        this.myToast("close", reason.errMsg);
+      });
+  };
+
+  onReset = () => {
     this.setState(
       {
-        model: {
-          licensePlateNum: "",
-          cellPhoneNum: "",
-          startDateSel: "2021-05-10",
-          startTimeSel: "09:00",
-          endDateSel: "2021-05-10",
-          endTimeSel: "10:00",
-        },
+        licensePlateNum: "",
+        cellPhoneNum: "",
+        startDateSel: "2021-05-10",
+        startTimeSel: "09:00",
+        endDateSel: "2021-05-10",
+        endTimeSel: "10:00",
       },
       () => {
-        this.setState({
-          toast: {
-            isOpened: true,
-            status: "",
-            text: "重置表单内容完成",
-            icon: "check",
-          },
-        });
+        this.myToast("check", "重置表单内容完成");
       }
     );
-  }
+  };
+
+  myToast = (icon, text) => {
+    this.setState(
+      {
+        isOpened: true,
+        status: "",
+        text: text,
+        icon: icon,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isOpened: false,
+          });
+        }, 1200);
+      }
+    );
+  };
 
   onEndDateChange = (e) => {
     this.setState({
@@ -162,6 +188,18 @@ class Index extends Component {
     });
   };
 
+  onLicensePlateNumChange = (value) => {
+    this.setState({
+      licensePlateNum: value,
+    });
+  };
+
+  onCellPhoneNumChange = (value) => {
+    this.setState({
+      cellPhoneNum: value,
+    });
+  };
+
   render() {
     return (
       <View>
@@ -173,91 +211,85 @@ class Index extends Component {
         >
           <View className="at-col at-col-1" />
           <View className="at-col at-col-10">
-            <AtForm
-              onSubmit={this.onSubmit.bind(this)}
-              onReset={this.onReset.bind(this)}
-            >
-              <View style={{ marginBottom: "30px" }}>
-                <AtInput
-                  name="licensePlateNum"
-                  title="车牌号"
-                  type="text"
-                  placeholder="请输入车牌号"
-                  value={this.state.model.licensePlateNum}
-                />
+            <View style={{ marginBottom: "30px" }}>
+              <AtInput
+                name="licensePlateNum"
+                title="车牌号"
+                type="text"
+                placeholder="请输入车牌号"
+                value={this.state.licensePlateNum}
+                onChange={this.onLicensePlateNumChange}
+              />
 
-                <AtInput
-                  name="licensePlateNum"
-                  title="手机号"
-                  type="number"
-                  placeholder="请输入手机号"
-                  value={this.state.model.cellPhoneNum}
-                />
+              <AtInput
+                name="licensePlateNum"
+                title="手机号"
+                type="number"
+                placeholder="请输入手机号"
+                value={this.state.cellPhoneNum}
+                onChange={this.onCellPhoneNumChange}
+              />
 
-                <View className="at-row at-row--wrap">
-                  <View className="at-col at-col-12">
-                    <Picker mode="date" onChange={this.onStartDateChange}>
-                      <AtList>
-                        <AtListItem
-                          title="开始时间"
-                          extraText={this.state.model.startDateSel}
-                        />
-                      </AtList>
-                    </Picker>
-                  </View>
-                  <View className="at-col at-col-12">
-                    <Picker mode="time" onChange={this.onStartTimeChange}>
-                      <AtList>
-                        <AtListItem
-                          title=""
-                          extraText={this.state.model.startTimeSel}
-                        />
-                      </AtList>
-                    </Picker>
-                  </View>
+              <View className="at-row at-row--wrap">
+                <View className="at-col at-col-12">
+                  <Picker mode="date" onChange={this.onStartDateChange}>
+                    <AtList>
+                      <AtListItem
+                        title="开始时间"
+                        extraText={this.state.startDateSel}
+                      />
+                    </AtList>
+                  </Picker>
                 </View>
-
-                <View className="at-row at-row--wrap">
-                  <View className="at-col at-col-12">
-                    <Picker mode="date" onChange={this.onEndDateChange}>
-                      <AtList>
-                        <AtListItem
-                          title="结束时间"
-                          extraText={this.state.model.endDateSel}
-                        />
-                      </AtList>
-                    </Picker>
-                  </View>
-                  <View className="at-col at-col-12">
-                    <Picker mode="time" onChange={this.onEndTimeChange}>
-                      <AtList>
-                        <AtListItem
-                          title=""
-                          extraText={this.state.model.endTimeSel}
-                        />
-                      </AtList>
-                    </Picker>
-                  </View>
+                <View className="at-col at-col-12">
+                  <Picker mode="time" onChange={this.onStartTimeChange}>
+                    <AtList>
+                      <AtListItem
+                        title=""
+                        extraText={this.state.startTimeSel}
+                      />
+                    </AtList>
+                  </Picker>
                 </View>
               </View>
 
-              <View>
-                <AtButton
-                  customStyle={{ margin: "20px" }}
-                  circle
-                  formType="submit"
-                >
-                  提交预约
-                </AtButton>
-                <AtButton
-                  customStyle={{ margin: "20px" }}
-                  circle
-                  formType="reset"
-                >
-                  重置表单
-                </AtButton>
+              <View className="at-row at-row--wrap">
+                <View className="at-col at-col-12">
+                  <Picker mode="date" onChange={this.onEndDateChange}>
+                    <AtList>
+                      <AtListItem
+                        title="结束时间"
+                        extraText={this.state.endDateSel}
+                      />
+                    </AtList>
+                  </Picker>
+                </View>
+                <View className="at-col at-col-12">
+                  <Picker mode="time" onChange={this.onEndTimeChange}>
+                    <AtList>
+                      <AtListItem title="" extraText={this.state.endTimeSel} />
+                    </AtList>
+                  </Picker>
+                </View>
               </View>
-            </AtForm>
+            </View>
+
+            <View>
+              <AtButton
+                customStyle={{ margin: "20px" }}
+                circle
+                onClick={this.onSubmit}
+              >
+                提交预约
+              </AtButton>
+              <AtButton
+                customStyle={{ margin: "20px" }}
+                circle
+                onClick={this.onReset}
+              >
+                重置表单
+              </AtButton>
+            </View>
           </View>
           <View className="at-col at-col-1" />
         </View>
@@ -265,10 +297,10 @@ class Index extends Component {
         <Footer current={1} />
 
         <AtToast
-          isOpened={this.state.toast.isOpened}
-          status={this.state.toast.status}
-          text={this.state.toast.text}
-          icon={this.state.toast.icon}
+          isOpened={this.state.isOpened}
+          status={this.state.status}
+          text={this.state.text}
+          icon={this.state.icon}
         />
       </View>
     );
