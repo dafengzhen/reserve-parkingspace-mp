@@ -5,6 +5,7 @@ import { AtList, AtListItem, AtToast } from "taro-ui";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { delTokenData } from "../../actions/login";
+import Taro from "@tarojs/taro";
 
 @connect(
   ({ login }) => ({
@@ -27,10 +28,15 @@ class Setting extends Component {
     };
   }
 
-  handleLogoutClick() {
+  handleLogoutClick = () => {
     this.props.delTokenData();
-    this.myToast("check", "退出登录成功");
-  }
+    this.myToast("check", "退出登录成功，两秒后跳转到列表页");
+    setTimeout(() => {
+      Taro.redirectTo({
+        url: "/pages/list/index",
+      });
+    }, 2200);
+  };
 
   myToast = (icon, text) => {
     this.setState(

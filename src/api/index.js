@@ -23,3 +23,13 @@ export const api_parking = apiAuth + "/parking";
  * 获取预约车位列表
  */
 export const api_parkingList = apiPublic + "/parkingList";
+
+/**
+ * 获取我的预约列表
+ */
+export const api_myParkingList = apiAuth + "/myParkingList";
+
+/**
+ * 取消预约
+ */
+export const api_cancel = apiAuth + "/cancel";

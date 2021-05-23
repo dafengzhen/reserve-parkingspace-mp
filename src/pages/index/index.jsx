@@ -101,7 +101,7 @@ class Index extends Component {
       Taro.redirectTo({
         url: "/pages/login/index",
       }).catch((reason) => {
-        alert(reason);
+        this.myToast("close", reason.errMsg);
       });
       return;
     }
