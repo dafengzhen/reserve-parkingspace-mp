@@ -2,24 +2,17 @@ import { Component } from "react";
 import { connect } from "react-redux";
 import { OpenData, View } from "@tarojs/components";
 import { AtList, AtListItem, AtToast } from "taro-ui";
-import Taro from "@tarojs/taro";
-import { add, minus, asyncAdd } from "../../actions/counter";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import { delTokenData } from "../../actions/login";
 
 @connect(
-  ({ counter }) => ({
-    counter,
+  ({ login }) => ({
+    login,
   }),
   (dispatch) => ({
-    add() {
-      dispatch(add());
-    },
-    dec() {
-      dispatch(minus());
-    },
-    asyncAdd() {
-      dispatch(asyncAdd());
+    delTokenData() {
+      dispatch(delTokenData());
     },
   })
 )
@@ -27,22 +20,35 @@ class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      toast: {
-        isOpened: false,
-        status: "",
-        text: "成功预约车位",
-        icon: "check", // close
-      },
+      isOpened: false,
+      status: "",
+      text: "",
+      icon: "check",
     };
   }
 
-  handleLoginClick() {
-    Taro.redirectTo({
-      url: "/pages/login/index",
-    });
+  handleLogoutClick() {
+    this.props.delTokenData();
+    this.myToast("check", "退出登录成功");
   }
 
-  handleClick() {}
+  myToast = (icon, text) => {
+    this.setState(
+      {
+        isOpened: true,
+        status: "",
+        text: text,
+        icon: icon,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            isOpened: false,
+          });
+        }, 1200);
+      }
+    );
+  };
 
   render() {
     return (
@@ -63,17 +69,17 @@ class Setting extends Component {
 
         <View>
           <AtList hasBorder={false}>
-            <AtListItem title="退出登录" onClick={this.handleClick} />
+            <AtListItem title="退出登录" onClick={this.handleLogoutClick} />
           </AtList>
         </View>
 
         <Footer current={3} />
 
         <AtToast
-          isOpened={this.state.toast.isOpened}
-          status={this.state.toast.status}
-          text={this.state.toast.text}
-          icon={this.state.toast.icon}
+          isOpened={this.state.isOpened}
+          status={this.state.status}
+          text={this.state.text}
+          icon={this.state.icon}
         />
       </View>
     );
