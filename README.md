@@ -22,6 +22,25 @@
 - 取消预约
 - 退出登录
 
+# 使用示例
+
+前端入口 src/app.jsx
+
+```shell
+# 运行
+yarn dev:weapp
+
+# 打包
+yarn build:weapp
+```
+
+api 相关配置 src/api/index.js
+
+# 示例图片
+
+![预约车位](src/images/预约车位.png) ![预约车位](src/images/预约列表.png)
+![预约车位](src/images/我的预约.png) ![预约车位](src/images/设置.png)
+
 # 后端服务
 
 https://github.com/dafengzhen/reserve-parkingspace
